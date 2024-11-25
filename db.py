@@ -1,4 +1,8 @@
 from sqlalchemy import create_engine
 
+from config import config
 
-engine = create_engine("mysql://root:root@127.0.0.1:3306/curso_sqlalchemy")
+
+engine = create_engine(
+    f"mysql://{config.db_user}:{config.db_password}@{config.db_host}:{config.db_port}/{config.db_name}"
+)
