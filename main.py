@@ -1,13 +1,12 @@
-from sqlalchemy import insert
+from sqlalchemy import select
 
 from db import engine
 from models.imperative import client_table
 
 
 with engine.connect() as conn:
-    stmt = insert(client_table).values(name="Elton Fonseca", email="elton@mail.com")
+    stmt = select(client_table).where(client_table.c.name == "Cleyson Lima")
+    print(stmt)
     result = conn.execute(stmt)
-    print(result.inserted_primary_key)
-    print(result.inserted_primary_key_rows)
-    print(result.last_inserted_params())
-    conn.commit()
+    for row in result:
+        print(row)
