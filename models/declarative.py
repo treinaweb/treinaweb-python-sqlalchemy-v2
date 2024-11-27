@@ -1,4 +1,5 @@
-from sqlalchemy import String, ForeignKey
+from datetime import datetime
+from sqlalchemy import String, ForeignKey, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from db import engine
@@ -22,6 +23,8 @@ class Client(Base):
         cascade="save-update, merge, delete, delete-orphan",
     )
 
+    orders: Mapped[list["Order"]] = relationship(back_populates="client")
+
     def __repr__(self):
         return f"<Client(id={self.id}, name={self.name}, email={self.email})>"
 
@@ -42,6 +45,20 @@ class Address(Base):
 
     def __repr__(self):
         return f"<Address(id={self.id}, state={self.state}, city={self.city}, neighborhood={self.neighborhood}, street={self.street}, number={self.number})>"
+
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    description: Mapped[str] = mapped_column(Text)
+    datetime: Mapped[datetime]
+
+    client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"))
+    client: Mapped["Client"] = relationship(back_populates="orders")
+
+    def __repr__(self):
+        return f"<Order(id={self.id}, description={self.description}, datetime={self.datetime})>"
 
 
 Base.metadata.create_all(engine)
