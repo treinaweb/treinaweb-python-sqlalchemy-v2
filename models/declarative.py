@@ -17,7 +17,9 @@ class Client(Base):
 
     address_id: Mapped[int] = mapped_column(ForeignKey("addresses.id"))
     address: Mapped["Address"] = relationship(
-        back_populates="client", single_parent=True
+        back_populates="client",
+        single_parent=True,
+        cascade="save-update, merge, delete, delete-orphan",
     )
 
     def __repr__(self):
