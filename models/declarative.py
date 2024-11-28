@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import String, ForeignKey, Text
+from sqlalchemy import String, ForeignKey, Text, Table, Column
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from db import engine
@@ -7,6 +7,14 @@ from models.uf import UF
 
 
 class Base(DeclarativeBase): ...
+
+
+order_product = Table(
+    "order_product",
+    Base.metadata,
+    Column("order_id", ForeignKey("orders.id"), primary_key=True),
+    Column("product_id", ForeignKey("products.id"), primary_key=True),
+)
 
 
 class Client(Base):
@@ -60,8 +68,27 @@ class Order(Base):
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"))
     client: Mapped["Client"] = relationship(back_populates="orders")
 
+    products: Mapped[list["Product"]] = relationship(
+        secondary=order_product, back_populates="orders"
+    )
+
     def __repr__(self):
         return f"<Order(id={self.id}, description={self.description}, datetime={self.datetime})>"
+
+
+class Product(Base):
+    __tablename__ = "products"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100))
+    price: Mapped[float]
+
+    orders: Mapped[list["Order"]] = relationship(
+        secondary=order_product, back_populates="products"
+    )
+
+    def __repr__(self):
+        return f"<Product(id={self.id}, name={self.name}, price={self.price})>"
 
 
 Base.metadata.create_all(engine)
