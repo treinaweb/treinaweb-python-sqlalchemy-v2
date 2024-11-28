@@ -23,7 +23,10 @@ class Client(Base):
         cascade="save-update, merge, delete, delete-orphan",
     )
 
-    orders: Mapped[list["Order"]] = relationship(back_populates="client")
+    orders: Mapped[list["Order"]] = relationship(
+        back_populates="client",
+        cascade="save-update, merge, delete, delete-orphan",
+    )
 
     def __repr__(self):
         return f"<Client(id={self.id}, name={self.name}, email={self.email})>"
